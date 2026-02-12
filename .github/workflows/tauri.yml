@@ -24,7 +24,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # Use the current LTS Node to match tauri-action's expectations
+          node-version: 'lts/*'
           cache: "npm"
 
       - name: Install Rust toolchain
@@ -39,7 +40,7 @@ jobs:
         run: npm install
 
       - name: Build Tauri app (per-platform)
-        uses: tauri-apps/tauri-action@v0
+        uses: tauri-apps/tauri-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
