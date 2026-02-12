@@ -29,20 +29,19 @@ jobs:
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
 
       - name: Install frontend dependencies
         run: npm install
 
-      - name: Install Tauri CLI
-        run: npm install -D @tauri-apps/cli
-
-      - name: Build Tauri app and create release
+      - name: Build Tauri app (per-platform)
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          # Uses `npm run tauri build` under the hood
+          # This runs "npm run tauri build" by default
           tauriScript: "tauri"
-          tagName: v__VERSION__
-          releaseName: "Splicedd v__VERSION__"
-          releaseBody: "Automated Tauri build for Windows and macOS."
