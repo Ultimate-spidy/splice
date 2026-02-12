@@ -1,0 +1,48 @@
+name: Build Splicedd (Tauri)
+
+on:
+  # Runs when you push a tag like v1.1.1
+  push:
+    tags:
+      - "v*"
+  # Allow manual runs from the Actions tab
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install frontend dependencies
+        run: npm install
+
+      - name: Install Tauri CLI
+        run: npm install -D @tauri-apps/cli
+
+      - name: Build Tauri app and create release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Uses `npm run tauri build` under the hood
+          tauriScript: "tauri"
+          tagName: v__VERSION__
+          releaseName: "Splicedd v__VERSION__"
+          releaseBody: "Automated Tauri build for Windows and macOS."
